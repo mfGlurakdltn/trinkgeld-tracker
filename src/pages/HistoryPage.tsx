@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShifts, useDeleteShift } from '@/hooks/useShifts';
 import { formatCurrency, formatDate, getWeekday } from '@/lib/utils';
-import { ArrowLeft, Sun, Moon, Trash2, Search, Filter, X } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Trash2, Search, X } from 'lucide-react';
 
 type SortKey = 'datum' | 'betrag' | 'euro_pro_stunde';
 type FilterSchicht = 'all' | 'f' | 's';

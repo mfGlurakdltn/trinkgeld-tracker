@@ -118,7 +118,7 @@ export default function AddShiftPage() {
             {[
               { value: 'f' as const, label: 'Frühschicht', icon: Sun, color: 'amber' },
               { value: 's' as const, label: 'Spätschicht', icon: Moon, color: 'indigo' },
-            ].map(({ value, label, icon: Icon, color }) => (
+            ].map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
                 type="button"

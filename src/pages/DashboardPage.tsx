@@ -4,15 +4,15 @@ import { useShifts } from '@/hooks/useShifts';
 import { useAuth } from '@/hooks/useAuth';
 import { calculateStats, calcChange, filterByMonth } from '@/services/statisticsService';
 import { formatCurrency, formatDateShort, getWeekday } from '@/lib/utils';
-import { Plus, BarChart3, Download, Clock, Sun, Moon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Plus, BarChart3, Download, Clock, Sun, Moon, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: shifts, isLoading } = useShifts();
 
-  const { currentStats, previousStats, change, recentShifts } = useMemo(() => {
-    if (!shifts) return { currentStats: null, previousStats: null, change: null, recentShifts: [] };
+  const { currentStats, change, recentShifts } = useMemo(() => {
+    if (!shifts) return { currentStats: null, change: null, recentShifts: [] };
 
     const now = new Date();
     const currentMonth = filterByMonth(shifts, now.getFullYear(), now.getMonth());
@@ -25,7 +25,6 @@ export default function DashboardPage() {
 
     return {
       currentStats: cs,
-      previousStats: ps,
       change: ch,
       recentShifts: shifts.slice(0, 5),
     };

@@ -163,7 +163,7 @@ export default function StatsPage() {
                       color: '#fff',
                       fontSize: '13px',
                     }}
-                    formatter={(value: number) => [formatCurrency(value), 'Ø Trinkgeld']}
+                    formatter={(value) => formatCurrency(Number(value))}
                   />
                   <Bar dataKey="avg" radius={[6, 6, 0, 0]}>
                     {weekdayData.map((entry) => (

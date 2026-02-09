@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useShifts } from '@/hooks/useShifts';
-import { ArrowLeft, LogOut, Download, User, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, LogOut, Download, User, Info } from 'lucide-react';
 
 export default function ProfilePage() {
   const navigate = useNavigate();

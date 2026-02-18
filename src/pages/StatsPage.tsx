@@ -19,6 +19,7 @@ interface MonthData {
   name: string;
   total: number;
   avg: number;
+  avgRevenue: number | null;
   tipRate: number | null;
   count: number;
 }
@@ -41,16 +42,19 @@ function getMonthlyBreakdown(shifts: ShiftExtended[], year: number): MonthData[]
 
     const total = monthShifts.reduce((sum, s) => sum + s.betrag, 0);
     const avg = total / monthShifts.length;
-    const totalRevenue = monthShifts
-      .filter(s => s.umsatz && s.umsatz > 0)
-      .reduce((sum, s) => sum + (s.umsatz || 0), 0);
+    const shiftsWithRevenue = monthShifts.filter(s => s.umsatz && s.umsatz > 0);
+    const totalRevenue = shiftsWithRevenue.reduce((sum, s) => sum + (s.umsatz || 0), 0);
     const tipRate = totalRevenue > 0 ? (total / totalRevenue) * 100 : null;
+    const avgRevenue = shiftsWithRevenue.length > 0
+      ? totalRevenue / shiftsWithRevenue.length
+      : null;
 
     months.push({
       month: m,
       name: MONTH_NAMES[m],
       total: Math.round(total * 100) / 100,
       avg: Math.round(avg * 100) / 100,
+      avgRevenue: avgRevenue !== null ? Math.round(avgRevenue * 100) / 100 : null,
       tipRate: tipRate !== null ? Math.round(tipRate * 10) / 10 : null,
       count: monthShifts.length,
     });
@@ -62,7 +66,7 @@ function getMonthlyBreakdown(shifts: ShiftExtended[], year: number): MonthData[]
 export default function StatsPage() {
   const navigate = useNavigate();
   const { data: shifts, isLoading } = useShifts();
-  const [period, setPeriod] = useState<Period>('month');
+  const [period, setPeriod] = useState<Period>('all');
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -105,7 +109,6 @@ export default function StatsPage() {
     return { avgFrueh, avgSpaet, countFrueh: frueh.length, countSpaet: spaet.length };
   }, [filteredShifts]);
 
-  // Monthly overview data
   const { availableYears, monthlyData } = useMemo(() => {
     if (!shifts || shifts.length === 0) return { availableYears: [], monthlyData: [] };
     return {
@@ -209,9 +212,9 @@ export default function StatsPage() {
               </div>
             )}
 
-            {/* Bar Chart */}
+            {/* Bar Chart - Trinkgeld nach Wochentag */}
             <div className="glass rounded-2xl p-5 animate-fade-in animate-fade-in-delay-2">
-              <p className="text-text-secondary text-sm mb-4">Trinkgeld nach Wochentag</p>
+              <p className="text-text-secondary text-sm mb-4">Ø Trinkgeld nach Wochentag</p>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={weekdayData} barCategoryGap="20%">
                   <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#A8B2C8', fontSize: 12 }} />
@@ -237,6 +240,37 @@ export default function StatsPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+            </div>
+
+            {/* Wochentag-Häufigkeit */}
+            <div className="glass rounded-2xl p-5 animate-fade-in animate-fade-in-delay-3">
+              <p className="text-text-secondary text-sm mb-3">Arbeitstage-Häufigkeit</p>
+              <div className="grid grid-cols-7 gap-1.5">
+                {weekdayData.map((wd) => {
+                  const maxCount = Math.max(...weekdayData.map(d => d.count), 1);
+                  const intensity = wd.count > 0 ? Math.max(0.2, wd.count / maxCount) : 0;
+                  return (
+                    <div key={wd.day} className="flex flex-col items-center gap-1.5">
+                      <div
+                        className="w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all"
+                        style={{
+                          backgroundColor: wd.count > 0
+                            ? `rgba(74, 144, 226, ${intensity})`
+                            : 'rgba(26, 40, 71, 0.5)',
+                          color: wd.count > 0 ? '#fff' : '#6B7A99',
+                        }}
+                      >
+                        {wd.count}
+                      </div>
+                      <span className={`text-[10px] font-medium ${
+                        wd.day === todayDay ? 'text-accent' : 'text-text-muted'
+                      }`}>
+                        {wd.day}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Früh vs Spät */}
@@ -332,10 +366,16 @@ export default function StatsPage() {
                       <p className="text-positive font-bold">{formatCurrency(m.total)}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <div className="bg-bg-secondary/50 rounded-lg px-3 py-2">
-                        <p className="text-text-muted text-[10px] uppercase tracking-wider">Durchschnitt</p>
+                        <p className="text-text-muted text-[10px] uppercase tracking-wider">Ø Trinkgeld</p>
                         <p className="text-sm font-semibold mt-0.5">{formatCurrency(m.avg)}</p>
+                      </div>
+                      <div className="bg-bg-secondary/50 rounded-lg px-3 py-2">
+                        <p className="text-text-muted text-[10px] uppercase tracking-wider">Ø Umsatz</p>
+                        <p className="text-sm font-semibold mt-0.5">
+                          {m.avgRevenue !== null ? formatCurrency(m.avgRevenue) : '–'}
+                        </p>
                       </div>
                       <div className="bg-bg-secondary/50 rounded-lg px-3 py-2">
                         <p className="text-text-muted text-[10px] uppercase tracking-wider">Tip-Rate</p>

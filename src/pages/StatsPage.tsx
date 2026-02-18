@@ -4,14 +4,67 @@ import { useShifts } from '@/hooks/useShifts';
 import { calculateStats, groupByWeekday, filterByMonth, filterByWeek, calcChange } from '@/services/statisticsService';
 import { formatCurrency } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
-import { ArrowLeft, TrendingUp, TrendingDown, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Sun, Moon, ChevronDown, Calendar } from 'lucide-react';
+import type { ShiftExtended } from '@/types';
 
 type Period = 'week' | 'month' | 'all';
+
+const MONTH_NAMES = [
+  'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+  'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+];
+
+interface MonthData {
+  month: number;
+  name: string;
+  total: number;
+  avg: number;
+  tipRate: number | null;
+  count: number;
+}
+
+function getAvailableYears(shifts: ShiftExtended[]): number[] {
+  const years = new Set(shifts.map(s => new Date(s.datum).getFullYear()));
+  return Array.from(years).sort((a, b) => b - a);
+}
+
+function getMonthlyBreakdown(shifts: ShiftExtended[], year: number): MonthData[] {
+  const months: MonthData[] = [];
+
+  for (let m = 0; m < 12; m++) {
+    const monthShifts = shifts.filter(s => {
+      const d = new Date(s.datum);
+      return d.getFullYear() === year && d.getMonth() === m;
+    });
+
+    if (monthShifts.length === 0) continue;
+
+    const total = monthShifts.reduce((sum, s) => sum + s.betrag, 0);
+    const avg = total / monthShifts.length;
+    const totalRevenue = monthShifts
+      .filter(s => s.umsatz && s.umsatz > 0)
+      .reduce((sum, s) => sum + (s.umsatz || 0), 0);
+    const tipRate = totalRevenue > 0 ? (total / totalRevenue) * 100 : null;
+
+    months.push({
+      month: m,
+      name: MONTH_NAMES[m],
+      total: Math.round(total * 100) / 100,
+      avg: Math.round(avg * 100) / 100,
+      tipRate: tipRate !== null ? Math.round(tipRate * 10) / 10 : null,
+      count: monthShifts.length,
+    });
+  }
+
+  return months;
+}
 
 export default function StatsPage() {
   const navigate = useNavigate();
   const { data: shifts, isLoading } = useShifts();
   const [period, setPeriod] = useState<Period>('month');
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const { filteredShifts, stats, weekdayData, comparison } = useMemo(() => {
     if (!shifts) return { filteredShifts: [], stats: null, weekdayData: [], comparison: null };
@@ -43,7 +96,6 @@ export default function StatsPage() {
     };
   }, [shifts, period]);
 
-  // Comparison: Früh vs Spät
   const shiftComparison = useMemo(() => {
     if (!filteredShifts.length) return null;
     const frueh = filteredShifts.filter(s => s.schicht === 'f');
@@ -52,6 +104,15 @@ export default function StatsPage() {
     const avgSpaet = spaet.length > 0 ? spaet.reduce((s, x) => s + x.betrag, 0) / spaet.length : 0;
     return { avgFrueh, avgSpaet, countFrueh: frueh.length, countSpaet: spaet.length };
   }, [filteredShifts]);
+
+  // Monthly overview data
+  const { availableYears, monthlyData } = useMemo(() => {
+    if (!shifts || shifts.length === 0) return { availableYears: [], monthlyData: [] };
+    return {
+      availableYears: getAvailableYears(shifts),
+      monthlyData: getMonthlyBreakdown(shifts, selectedYear),
+    };
+  }, [shifts, selectedYear]);
 
   if (isLoading) {
     return (
@@ -67,6 +128,7 @@ export default function StatsPage() {
   }
 
   const todayDay = new Date().toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '');
+  const currentMonth = new Date().getMonth();
 
   return (
     <div className="min-h-screen pb-24">
@@ -196,6 +258,97 @@ export default function StatsPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* ===== MONATSÜBERSICHT ===== */}
+        {availableYears.length > 0 && (
+          <div className="animate-fade-in animate-fade-in-delay-3">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-accent" />
+                <h2 className="text-lg font-semibold">Monatsübersicht</h2>
+              </div>
+
+              {/* Year Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
+                  className="flex items-center gap-1.5 bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:border-accent transition-colors"
+                >
+                  {selectedYear}
+                  <ChevronDown size={14} className={`text-text-muted transition-transform ${yearDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {yearDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setYearDropdownOpen(false)} />
+                    <div className="absolute right-0 top-full mt-1 z-20 bg-bg-secondary border border-[#2D3E5F] rounded-lg shadow-xl overflow-hidden min-w-[100px]">
+                      {availableYears.map(year => (
+                        <button
+                          key={year}
+                          onClick={() => {
+                            setSelectedYear(year);
+                            setYearDropdownOpen(false);
+                          }}
+                          className={`w-full px-4 py-2.5 text-sm text-left transition-colors ${
+                            year === selectedYear
+                              ? 'bg-accent/20 text-accent font-medium'
+                              : 'text-text-secondary hover:bg-bg-card hover:text-text-primary'
+                          }`}
+                        >
+                          {year}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Monthly Cards */}
+            {monthlyData.length === 0 ? (
+              <div className="glass rounded-2xl p-6 text-center">
+                <p className="text-text-secondary text-sm">Keine Daten für {selectedYear}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {monthlyData.map((m, i) => (
+                  <div
+                    key={m.month}
+                    className="glass rounded-2xl p-4 animate-fade-in"
+                    style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s`, opacity: 0 }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-semibold ${
+                          selectedYear === new Date().getFullYear() && m.month === currentMonth
+                            ? 'text-accent'
+                            : 'text-text-primary'
+                        }`}>
+                          {m.name}
+                        </span>
+                        <span className="text-text-muted text-xs">{m.count} Schichten</span>
+                      </div>
+                      <p className="text-positive font-bold">{formatCurrency(m.total)}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-bg-secondary/50 rounded-lg px-3 py-2">
+                        <p className="text-text-muted text-[10px] uppercase tracking-wider">Durchschnitt</p>
+                        <p className="text-sm font-semibold mt-0.5">{formatCurrency(m.avg)}</p>
+                      </div>
+                      <div className="bg-bg-secondary/50 rounded-lg px-3 py-2">
+                        <p className="text-text-muted text-[10px] uppercase tracking-wider">Tip-Rate</p>
+                        <p className="text-sm font-semibold mt-0.5">
+                          {m.tipRate !== null ? `${m.tipRate}%` : '–'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

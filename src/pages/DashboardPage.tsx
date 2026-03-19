@@ -98,7 +98,7 @@ export default function DashboardPage() {
         {[
           { icon: Plus, label: 'Hinzufügen', path: '/add', accent: true },
           { icon: BarChart3, label: 'Statistik', path: '/stats' },
-          { icon: Download, label: 'Export', path: '/profile' },
+          { icon: Download, label: 'Download', path: '/profile' },
           { icon: Clock, label: 'Historie', path: '/history' },
         ].map(({ icon: Icon, label, path, accent }) => (
           <button

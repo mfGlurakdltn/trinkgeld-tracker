@@ -8,6 +8,7 @@ import { ArrowLeft, TrendingUp, TrendingDown, Sun, Moon, ChevronDown, Calendar }
 import type { ShiftExtended } from '@/types';
 
 type Period = 'week' | 'month' | 'all';
+type ShiftFilter = 'all' | 'f' | 's';
 
 const MONTH_NAMES = [
   'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -67,6 +68,7 @@ export default function StatsPage() {
   const navigate = useNavigate();
   const { data: shifts, isLoading } = useShifts();
   const [period, setPeriod] = useState<Period>('all');
+  const [weekdayShiftFilter, setWeekdayShiftFilter] = useState<ShiftFilter>('all');
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -214,32 +216,76 @@ export default function StatsPage() {
 
             {/* Bar Chart - Trinkgeld nach Wochentag */}
             <div className="glass rounded-2xl p-5 animate-fade-in animate-fade-in-delay-2">
-              <p className="text-text-secondary text-sm mb-4">Ø Trinkgeld nach Wochentag</p>
-              <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={weekdayData} barCategoryGap="20%">
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#A8B2C8', fontSize: 12 }} />
-                  <YAxis hide />
-                  <Tooltip
-                    cursor={false}
-                    contentStyle={{
-                      background: '#1E2D4F',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      color: '#fff',
-                      fontSize: '13px',
-                    }}
-                    formatter={(value) => formatCurrency(Number(value))}
-                  />
-                  <Bar dataKey="avg" radius={[6, 6, 0, 0]}>
-                    {weekdayData.map((entry) => (
-                      <Cell
-                        key={entry.day}
-                        fill={entry.day === todayDay ? '#4A90E2' : '#2D5F9E'}
+              <div className="flex items-center justify-between mb-4 gap-3">
+                <p className="text-text-secondary text-sm">Ø Trinkgeld nach Wochentag</p>
+                <div className="flex bg-bg-secondary rounded-lg p-0.5 shrink-0">
+                  {[
+                    { key: 'all' as ShiftFilter, label: 'Alle', icon: null },
+                    { key: 'f' as ShiftFilter, label: 'Früh', icon: <Sun size={12} /> },
+                    { key: 's' as ShiftFilter, label: 'Spät', icon: <Moon size={12} /> },
+                  ].map(({ key, label, icon }) => (
+                    <button
+                      key={key}
+                      onClick={() => setWeekdayShiftFilter(key)}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        weekdayShiftFilter === key
+                          ? key === 'f'
+                            ? 'bg-amber-500/20 text-amber-400'
+                            : key === 's'
+                              ? 'bg-indigo-500/20 text-indigo-300'
+                              : 'bg-accent text-white'
+                          : 'text-text-muted hover:text-text-primary'
+                      }`}
+                    >
+                      {icon}
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {(() => {
+                const dataKey = weekdayShiftFilter === 'f' ? 'avgFrueh' : weekdayShiftFilter === 's' ? 'avgSpaet' : 'avg';
+                const countKey = weekdayShiftFilter === 'f' ? 'countFrueh' : weekdayShiftFilter === 's' ? 'countSpaet' : 'count';
+                const baseColor = weekdayShiftFilter === 'f' ? '#B45309' : weekdayShiftFilter === 's' ? '#4338CA' : '#2D5F9E';
+                const activeColor = weekdayShiftFilter === 'f' ? '#F59E0B' : weekdayShiftFilter === 's' ? '#818CF8' : '#4A90E2';
+                const hasData = weekdayData.some(d => (d[countKey] as number) > 0);
+                if (!hasData) {
+                  return (
+                    <div className="h-[180px] flex items-center justify-center">
+                      <p className="text-text-muted text-sm">
+                        Keine {weekdayShiftFilter === 'f' ? 'Früh' : 'Spät'}schichten in diesem Zeitraum
+                      </p>
+                    </div>
+                  );
+                }
+                return (
+                  <ResponsiveContainer width="100%" height={180}>
+                    <BarChart data={weekdayData} barCategoryGap="20%">
+                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#A8B2C8', fontSize: 12 }} />
+                      <YAxis hide />
+                      <Tooltip
+                        cursor={false}
+                        contentStyle={{
+                          background: '#1E2D4F',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          color: '#fff',
+                          fontSize: '13px',
+                        }}
+                        formatter={(value) => formatCurrency(Number(value))}
                       />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                      <Bar dataKey={dataKey} radius={[6, 6, 0, 0]}>
+                        {weekdayData.map((entry) => (
+                          <Cell
+                            key={entry.day}
+                            fill={entry.day === todayDay ? activeColor : baseColor}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              })()}
             </div>
 
             {/* Wochentag-Häufigkeit */}

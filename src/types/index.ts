@@ -44,4 +44,8 @@ export interface WeekdayData {
   avg: number;
   total: number;
   count: number;
+  avgFrueh: number;
+  countFrueh: number;
+  avgSpaet: number;
+  countSpaet: number;
 }

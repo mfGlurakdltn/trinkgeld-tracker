@@ -37,20 +37,27 @@ export function calculateStats(shifts: ShiftExtended[]): Stats | null {
 
 export function groupByWeekday(shifts: ShiftExtended[]): WeekdayData[] {
   const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-  const grouped = new Map<string, number[]>(days.map(d => [d, []]));
+  const all = new Map<string, number[]>(days.map(d => [d, []]));
+  const frueh = new Map<string, number[]>(days.map(d => [d, []]));
+  const spaet = new Map<string, number[]>(days.map(d => [d, []]));
 
   shifts.forEach(s => {
     const day = new Date(s.datum).toLocaleDateString('de-DE', { weekday: 'short' });
-    // Remove trailing dot if present (e.g. "Mo." -> "Mo")
     const cleanDay = day.replace('.', '');
-    grouped.get(cleanDay)?.push(s.betrag);
+    all.get(cleanDay)?.push(s.betrag);
+    if (s.schicht === 'f') frueh.get(cleanDay)?.push(s.betrag);
+    else if (s.schicht === 's') spaet.get(cleanDay)?.push(s.betrag);
   });
 
   return days.map(day => ({
     day,
-    avg: average(grouped.get(day) || []),
-    total: round(sum(grouped.get(day) || [])),
-    count: (grouped.get(day) || []).length,
+    avg: average(all.get(day) || []),
+    total: round(sum(all.get(day) || [])),
+    count: (all.get(day) || []).length,
+    avgFrueh: average(frueh.get(day) || []),
+    countFrueh: (frueh.get(day) || []).length,
+    avgSpaet: average(spaet.get(day) || []),
+    countSpaet: (spaet.get(day) || []).length,
   }));
 }
 

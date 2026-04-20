@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useShifts } from '@/hooks/useShifts';
+import { useViewMode } from '@/contexts/ViewModeContext';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/utils';
 import {
   ArrowLeft, LogOut, Download, User, Info, Lock, Loader2, Check, Mail,
-  Clock, UserCog, ChevronDown,
+  Clock, UserCog, ChevronDown, Monitor, Smartphone,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,12 +19,13 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: shifts } = useShifts();
+  const { viewMode, setViewMode, canUseDesktop } = useViewMode();
 
   const [tab, setTab] = useState<Tab>('profil');
 
   // Collapsible section state
   const [openSection, setOpenSection] = useState<
-    'name' | 'arbeitszeit' | 'email' | 'passwort' | null
+    'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht' | null
   >(null);
   const [infoOpen, setInfoOpen] = useState(false);
 
@@ -45,7 +47,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const toggleSection = (section: 'name' | 'arbeitszeit' | 'email' | 'passwort') => {
+  const toggleSection = (section: 'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht') => {
     setOpenSection(openSection === section ? null : section);
   };
 
@@ -273,6 +275,61 @@ export default function ProfilePage() {
 
         {tab === 'einstellungen' && (
           <div className="glass rounded-2xl overflow-hidden animate-fade-in">
+            {/* Ansicht (nur auf Laptop/Tablet sichtbar) */}
+            {canUseDesktop && (
+              <>
+                <button
+                  onClick={() => toggleSection('ansicht')}
+                  className="w-full flex items-center gap-4 p-4 hover:bg-bg-card/50 transition-colors border-b border-border"
+                >
+                  {viewMode === 'desktop'
+                    ? <Monitor size={18} className="text-accent" />
+                    : <Smartphone size={18} className="text-accent" />}
+                  <div className="text-left flex-1">
+                    <p className="font-medium text-sm">Ansicht</p>
+                    <p className="text-text-muted text-xs">
+                      {viewMode === 'desktop' ? 'Laptop-Ansicht aktiv' : 'Handy-Ansicht aktiv'}
+                    </p>
+                  </div>
+                  <ChevronDown
+                    size={14}
+                    className={`text-text-muted transition-transform ${openSection === 'ansicht' ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {openSection === 'ansicht' && (
+                  <div className="p-4 bg-bg-secondary/30 border-b border-border animate-fade-in">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setViewMode('mobile')}
+                        className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
+                          viewMode === 'mobile'
+                            ? 'bg-accent/20 text-accent border border-accent/30'
+                            : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        <Smartphone size={16} />
+                        Handy
+                      </button>
+                      <button
+                        onClick={() => setViewMode('desktop')}
+                        className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
+                          viewMode === 'desktop'
+                            ? 'bg-accent/20 text-accent border border-accent/30'
+                            : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        <Monitor size={16} />
+                        Laptop
+                      </button>
+                    </div>
+                    <p className="text-text-muted text-xs mt-3 leading-relaxed">
+                      Auf kleinen Bildschirmen wird immer die Handy-Ansicht verwendet.
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+
             {/* Profilname */}
             <button
               onClick={() => toggleSection('name')}

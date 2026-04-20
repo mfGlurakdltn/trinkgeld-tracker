@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { ViewModeProvider, useViewMode } from '@/contexts/ViewModeContext';
 import BottomNav from '@/components/layout/BottomNav';
 import AuthPage from '@/pages/AuthPage';
 import DashboardPage from '@/pages/DashboardPage';
@@ -43,8 +44,13 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AppRoutes() {
+  const { viewMode } = useViewMode();
+  const containerClass = viewMode === 'desktop'
+    ? 'max-w-5xl mx-auto min-h-screen relative'
+    : 'max-w-lg mx-auto min-h-screen relative';
+
   return (
-    <div className="max-w-lg mx-auto min-h-screen relative">
+    <div className={containerClass}>
       <Routes>
         <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -62,20 +68,22 @@ function AppRoutes() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppRoutes />
-        <Toaster
-          theme="dark"
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: '#1E2D4F',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: '#fff',
-            },
-          }}
-        />
-      </BrowserRouter>
+      <ViewModeProvider>
+        <BrowserRouter>
+          <AppRoutes />
+          <Toaster
+            theme="dark"
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: '#1E2D4F',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: '#fff',
+              },
+            }}
+          />
+        </BrowserRouter>
+      </ViewModeProvider>
     </QueryClientProvider>
   );
 }

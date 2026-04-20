@@ -1,25 +1,34 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAddShift } from '@/hooks/useShifts';
+import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowLeft, Loader2, Sun, Moon } from 'lucide-react';
 
-const SHIFT_HOURS = 5.5;
+const DEFAULT_SHIFT_HOURS = 5.5;
 
 export default function AddShiftPage() {
   const navigate = useNavigate();
   const addShift = useAddShift();
+  const { user } = useAuth();
+
+  const defaultArbeitszeit = Number(user?.user_metadata?.default_arbeitszeit) || DEFAULT_SHIFT_HOURS;
 
   const [datum, setDatum] = useState(new Date().toISOString().split('T')[0]);
   const [betrag, setBetrag] = useState('');
   const [schicht, setSchicht] = useState<'f' | 's' | null>(null);
   const [mitarbeiter, setMitarbeiter] = useState<number>(1);
   const [umsatz, setUmsatz] = useState('');
+  const [useStandardTime, setUseStandardTime] = useState(true);
+  const [arbeitszeit, setArbeitszeit] = useState(defaultArbeitszeit.toString());
   const [notiz, setNotiz] = useState('');
 
   const betragNum = parseFloat(betrag) || 0;
   const umsatzNum = parseFloat(umsatz) || 0;
-  const euroPerHour = betragNum > 0 ? betragNum / SHIFT_HOURS : 0;
+  const arbeitszeitNum = useStandardTime
+    ? defaultArbeitszeit
+    : (parseFloat(arbeitszeit) || defaultArbeitszeit);
+  const euroPerHour = betragNum > 0 && arbeitszeitNum > 0 ? betragNum / arbeitszeitNum : 0;
   const tipPercent = betragNum > 0 && umsatzNum > 0 ? (betragNum / umsatzNum) * 100 : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +41,7 @@ export default function AddShiftPage() {
       schicht,
       mitarbeiter,
       umsatz: umsatzNum > 0 ? umsatzNum : null,
+      arbeitszeit: arbeitszeitNum,
       notiz: notiz.trim() || null,
     });
     navigate('/');
@@ -116,8 +126,8 @@ export default function AddShiftPage() {
           <label className="block text-text-secondary text-sm mb-1.5">Schicht</label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { value: 'f' as const, label: 'Frühschicht', icon: Sun, color: 'amber' },
-              { value: 's' as const, label: 'Spätschicht', icon: Moon, color: 'indigo' },
+              { value: 'f' as const, label: 'Frühschicht', icon: Sun },
+              { value: 's' as const, label: 'Spätschicht', icon: Moon },
             ].map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
@@ -157,6 +167,34 @@ export default function AddShiftPage() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Arbeitszeit */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-text-secondary text-sm">
+              Arbeitszeit (Stunden) <span className="text-text-muted">optional</span>
+            </label>
+            <label className="flex items-center gap-2 text-xs text-text-secondary cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={useStandardTime}
+                onChange={e => setUseStandardTime(e.target.checked)}
+                className="w-4 h-4 rounded accent-accent cursor-pointer"
+              />
+              Standard ({defaultArbeitszeit}h)
+            </label>
+          </div>
+          <input
+            type="number"
+            value={useStandardTime ? defaultArbeitszeit : arbeitszeit}
+            onChange={e => setArbeitszeit(e.target.value)}
+            disabled={useStandardTime}
+            min="0.1"
+            step="0.25"
+            placeholder="z.B. 6.5"
+            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+          />
         </div>
 
         {/* Umsatz */}

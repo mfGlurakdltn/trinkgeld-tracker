@@ -1,26 +1,41 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShifts, useDeleteShift, useUpdateShift } from '@/hooks/useShifts';
+import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatDate, getWeekday } from '@/lib/utils';
 import { ArrowLeft, Sun, Moon, Trash2, Search, X, Pencil, Check, Loader2 } from 'lucide-react';
 import type { ShiftExtended } from '@/types';
+
+const DEFAULT_SHIFT_HOURS = 5.5;
 
 type SortKey = 'datum' | 'betrag' | 'euro_pro_stunde';
 type FilterSchicht = 'all' | 'f' | 's';
 
 function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => void }) {
   const updateShift = useUpdateShift();
+  const { user } = useAuth();
+  const defaultArbeitszeit = Number(user?.user_metadata?.default_arbeitszeit) || DEFAULT_SHIFT_HOURS;
 
   const [datum, setDatum] = useState(shift.datum);
   const [betrag, setBetrag] = useState(shift.betrag.toString());
   const [schicht, setSchicht] = useState<'f' | 's' | null>(shift.schicht);
   const [mitarbeiter, setMitarbeiter] = useState<number>(shift.mitarbeiter || 1);
   const [umsatz, setUmsatz] = useState(shift.umsatz?.toString() || '');
+  const [useStandardTime, setUseStandardTime] = useState(
+    shift.arbeitszeit === null || shift.arbeitszeit === defaultArbeitszeit
+  );
+  const [arbeitszeit, setArbeitszeit] = useState(
+    (shift.arbeitszeit ?? defaultArbeitszeit).toString()
+  );
   const [notiz, setNotiz] = useState(shift.notiz || '');
 
   const handleSave = async () => {
     const betragNum = parseFloat(betrag) || 0;
     if (betragNum <= 0) return;
+
+    const arbeitszeitNum = useStandardTime
+      ? defaultArbeitszeit
+      : (parseFloat(arbeitszeit) || defaultArbeitszeit);
 
     await updateShift.mutateAsync({
       id: shift.id,
@@ -30,6 +45,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
         schicht,
         mitarbeiter,
         umsatz: parseFloat(umsatz) || null,
+        arbeitszeit: arbeitszeitNum,
         notiz: notiz.trim() || null,
       },
     });
@@ -106,6 +122,30 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
             </button>
           ))}
         </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-text-muted text-xs">Arbeitszeit (h)</label>
+          <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={useStandardTime}
+              onChange={e => setUseStandardTime(e.target.checked)}
+              className="w-3.5 h-3.5 rounded accent-accent cursor-pointer"
+            />
+            Standard ({defaultArbeitszeit}h)
+          </label>
+        </div>
+        <input
+          type="number"
+          value={useStandardTime ? defaultArbeitszeit : arbeitszeit}
+          onChange={e => setArbeitszeit(e.target.value)}
+          disabled={useStandardTime}
+          min="0.1"
+          step="0.25"
+          className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-2">

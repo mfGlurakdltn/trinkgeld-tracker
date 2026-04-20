@@ -6,6 +6,7 @@ export interface Shift {
   schicht: 'f' | 's' | null;
   mitarbeiter: number | null;
   umsatz: number | null;
+  arbeitszeit: number | null;
   notiz: string | null;
   created_at: string;
   updated_at: string;
@@ -25,6 +26,7 @@ export interface ShiftInput {
   schicht: 'f' | 's' | null;
   mitarbeiter: number;
   umsatz: number | null;
+  arbeitszeit: number | null;
   notiz: string | null;
 }
 

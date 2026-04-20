@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShifts } from '@/hooks/useShifts';
 import { calculateStats, groupByWeekday, filterByMonth, filterByWeek, calcChange } from '@/services/statisticsService';
 import { formatCurrency } from '@/lib/utils';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { ArrowLeft, TrendingUp, TrendingDown, Sun, Moon, ChevronDown, Calendar } from 'lucide-react';
 import type { ShiftExtended } from '@/types';
 
@@ -251,7 +251,7 @@ export default function StatsPage() {
                 const hasData = weekdayData.some(d => (d[countKey] as number) > 0);
                 if (!hasData) {
                   return (
-                    <div className="h-[180px] flex items-center justify-center">
+                    <div className="h-[260px] flex items-center justify-center">
                       <p className="text-text-muted text-sm">
                         Keine {weekdayShiftFilter === 'f' ? 'Früh' : 'Spät'}schichten in diesem Zeitraum
                       </p>
@@ -259,21 +259,10 @@ export default function StatsPage() {
                   );
                 }
                 return (
-                  <ResponsiveContainer width="100%" height={180}>
-                    <BarChart data={weekdayData} barCategoryGap="20%">
-                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#A8B2C8', fontSize: 12 }} />
-                      <YAxis hide />
-                      <Tooltip
-                        cursor={false}
-                        contentStyle={{
-                          background: '#1E2D4F',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '12px',
-                          color: '#fff',
-                          fontSize: '13px',
-                        }}
-                        formatter={(value) => formatCurrency(Number(value))}
-                      />
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={weekdayData} barCategoryGap="20%" margin={{ top: 24, right: 4, left: 4, bottom: 0 }}>
+                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#A8B2C8', fontSize: 13 }} />
+                      <YAxis hide domain={[0, (dataMax: number) => dataMax * 1.18]} />
                       <Bar dataKey={dataKey} radius={[6, 6, 0, 0]}>
                         {weekdayData.map((entry) => (
                           <Cell
@@ -281,6 +270,17 @@ export default function StatsPage() {
                             fill={entry.day === todayDay ? activeColor : baseColor}
                           />
                         ))}
+                        <LabelList
+                          dataKey={dataKey}
+                          position="top"
+                          fill="#fff"
+                          fontSize={12}
+                          fontWeight={600}
+                          formatter={(value) => {
+                            const n = Number(value);
+                            return n > 0 ? `${Math.round(n)}€` : '';
+                          }}
+                        />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>

@@ -329,7 +329,7 @@ export default function ProfilePage() {
                   })}
                 </div>
                 <p className="text-text-muted text-xs mt-3 leading-relaxed">
-                  Liquid-Hintergründe nutzen animierte Glanz-Effekte hinter Glas-Karten.
+                  Wähle einen Hintergrund-Stil. Änderungen werden sofort angewendet.
                 </p>
               </div>
             )}

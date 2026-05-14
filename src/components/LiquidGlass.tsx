@@ -89,6 +89,8 @@ interface LiquidGlassProps {
   className?: string;
   style?: CSSProperties;
   onClick?: () => void;
+  topHighlight?: boolean;
+  innerGlowOpacity?: number;
 }
 
 export default function LiquidGlass({
@@ -105,6 +107,8 @@ export default function LiquidGlass({
   className = '',
   style,
   onClick,
+  topHighlight = true,
+  innerGlowOpacity = 0.35,
 }: LiquidGlassProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [measured, setMeasured] = useState({ w: 0, h: 0 });
@@ -241,30 +245,32 @@ export default function LiquidGlass({
           inset: 0,
           borderRadius,
           boxShadow: `
-            inset 0 1px 1px rgba(255,255,255,0.35),
-            inset 0 -1px 1px rgba(0,0,0,0.15),
-            inset 1px 0 1px rgba(255,255,255,0.08),
-            inset -1px 0 1px rgba(255,255,255,0.08)
+            inset 0 1px 1px rgba(255,255,255,${innerGlowOpacity}),
+            inset 0 -1px 1px rgba(0,0,0,${innerGlowOpacity * 0.43}),
+            inset 1px 0 1px rgba(255,255,255,${innerGlowOpacity * 0.23}),
+            inset -1px 0 1px rgba(255,255,255,${innerGlowOpacity * 0.23})
           `,
           zIndex: 2,
           pointerEvents: 'none',
         }}
       />
 
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '8%',
-          right: '8%',
-          height: 1,
-          borderRadius: '0 0 50% 50%',
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.5) 70%, transparent 100%)',
-          zIndex: 3,
-          pointerEvents: 'none',
-        }}
-      />
+      {topHighlight && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: '8%',
+            right: '8%',
+            height: 1,
+            borderRadius: '0 0 50% 50%',
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.5) 70%, transparent 100%)',
+            zIndex: 3,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       <div
         style={{

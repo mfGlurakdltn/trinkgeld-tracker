@@ -174,16 +174,19 @@ export default function DashboardPage() {
             >
               <LiquidGlass
                 id={`qa-${i}`}
-                width={56}
-                height={56}
-                borderRadius={18}
-                depth={6}
-                strength={40}
-                chromaticAberration={1}
-                tintColor={accent ? 'rgba(74,144,226,0.18)' : 'rgba(255,255,255,0.03)'}
+                width={58}
+                height={58}
+                borderRadius={20}
+                depth={4}
+                strength={28}
+                blur={0.4}
+                chromaticAberration={0.5}
+                topHighlight={false}
+                innerGlowOpacity={0.12}
+                tintColor={accent ? 'rgba(74,144,226,0.16)' : 'rgba(255,255,255,0.04)'}
               >
                 <div className="w-full h-full flex items-center justify-center">
-                  <Icon size={20} className={accent ? 'text-accent-light' : 'text-white'} />
+                  <Icon size={20} className={accent ? 'text-accent-light' : 'text-white/90'} />
                 </div>
               </LiquidGlass>
               <span className="text-text-secondary text-[10px] font-medium">{label}</span>

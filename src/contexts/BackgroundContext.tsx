@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 export type BackgroundPreset =
   | 'liquid'
   | 'classic'
+  | 'neoclassic'
   | 'cosmic'
   | 'forest'
   | 'sunset'
@@ -21,7 +22,7 @@ export interface BackgroundDef {
 export const BACKGROUND_PRESETS: Record<BackgroundPreset, BackgroundDef> = {
   liquid: {
     key: 'liquid',
-    label: 'Liquid Glass',
+    label: 'Aurora',
     gradient: 'linear-gradient(170deg, #06091A 0%, #0B1530 40%, #0E1E42 70%, #091228 100%)',
     blobs: [
       { color: 'rgba(74,144,226,0.20)' },
@@ -39,6 +40,14 @@ export const BACKGROUND_PRESETS: Record<BackgroundPreset, BackgroundDef> = {
     blobs: [],
     swatch: 'linear-gradient(135deg, #0A1128 0%, #1E2D4F 100%)',
     liquid: false,
+  },
+  neoclassic: {
+    key: 'neoclassic',
+    label: 'Neo Classic',
+    gradient: 'linear-gradient(170deg, #0A1128 0%, #142244 50%, #0A1128 100%)',
+    blobs: [],
+    swatch: 'linear-gradient(135deg, #0A1128 0%, #2D5F9E 100%)',
+    liquid: true,
   },
   cosmic: {
     key: 'cosmic',

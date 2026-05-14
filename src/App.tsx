@@ -3,7 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { ViewModeProvider, useViewMode } from '@/contexts/ViewModeContext';
+import { BackgroundProvider } from '@/contexts/BackgroundContext';
 import BottomNav from '@/components/layout/BottomNav';
+import AppBackground from '@/components/layout/AppBackground';
 import AuthPage from '@/pages/AuthPage';
 import DashboardPage from '@/pages/DashboardPage';
 import AddShiftPage from '@/pages/AddShiftPage';
@@ -18,7 +20,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -33,7 +35,7 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -46,44 +48,50 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   const { viewMode } = useViewMode();
   const containerClass = viewMode === 'desktop'
-    ? 'max-w-5xl mx-auto min-h-screen relative'
-    : 'max-w-lg mx-auto min-h-screen relative';
+    ? 'max-w-5xl mx-auto min-h-screen relative z-10'
+    : 'max-w-lg mx-auto min-h-screen relative z-10';
 
   return (
-    <div className={containerClass}>
-      <Routes>
-        <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
-        <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/add" element={<ProtectedRoute><AddShiftPage /></ProtectedRoute>} />
-        <Route path="/stats" element={<ProtectedRoute><StatsPage /></ProtectedRoute>} />
-        <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <BottomNav />
-    </div>
+    <>
+      <AppBackground />
+      <div className={containerClass}>
+        <Routes>
+          <Route path="/auth" element={<AuthRoute><AuthPage /></AuthRoute>} />
+          <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/add" element={<ProtectedRoute><AddShiftPage /></ProtectedRoute>} />
+          <Route path="/stats" element={<ProtectedRoute><StatsPage /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <BottomNav />
+      </div>
+    </>
   );
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ViewModeProvider>
-        <BrowserRouter>
-          <AppRoutes />
-          <Toaster
-            theme="dark"
-            position="top-center"
-            toastOptions={{
-              style: {
-                background: '#1E2D4F',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: '#fff',
-              },
-            }}
-          />
-        </BrowserRouter>
-      </ViewModeProvider>
+      <BackgroundProvider>
+        <ViewModeProvider>
+          <BrowserRouter>
+            <AppRoutes />
+            <Toaster
+              theme="dark"
+              position="top-center"
+              toastOptions={{
+                style: {
+                  background: 'rgba(30, 45, 79, 0.85)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#fff',
+                },
+              }}
+            />
+          </BrowserRouter>
+        </ViewModeProvider>
+      </BackgroundProvider>
     </QueryClientProvider>
   );
 }

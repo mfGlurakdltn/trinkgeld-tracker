@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useShifts } from '@/hooks/useShifts';
 import { useViewMode } from '@/contexts/ViewModeContext';
+import { useBackground, BACKGROUND_PRESETS, type BackgroundPreset } from '@/contexts/BackgroundContext';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/utils';
 import {
   ArrowLeft, LogOut, Download, User, Info, Lock, Loader2, Check, Mail,
-  Clock, UserCog, ChevronDown, Monitor, Smartphone,
+  Clock, UserCog, ChevronDown, Monitor, Smartphone, Palette,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,12 +21,13 @@ export default function ProfilePage() {
   const { user, signOut } = useAuth();
   const { data: shifts } = useShifts();
   const { viewMode, setViewMode, canUseDesktop } = useViewMode();
+  const { preset: bgPreset, setPreset: setBgPreset } = useBackground();
 
   const [tab, setTab] = useState<Tab>('profil');
 
   // Collapsible section state
   const [openSection, setOpenSection] = useState<
-    'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht' | null
+    'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht' | 'hintergrund' | null
   >(null);
   const [infoOpen, setInfoOpen] = useState(false);
 
@@ -47,7 +49,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const toggleSection = (section: 'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht') => {
+  const toggleSection = (section: 'name' | 'arbeitszeit' | 'email' | 'passwort' | 'ansicht' | 'hintergrund') => {
     setOpenSection(openSection === section ? null : section);
   };
 
@@ -275,6 +277,63 @@ export default function ProfilePage() {
 
         {tab === 'einstellungen' && (
           <div className="glass rounded-2xl overflow-hidden animate-fade-in">
+            {/* Hintergrund */}
+            <button
+              onClick={() => toggleSection('hintergrund')}
+              className="w-full flex items-center gap-4 p-4 hover:bg-bg-card/50 transition-colors border-b border-border"
+            >
+              <Palette size={18} className="text-accent" />
+              <div className="text-left flex-1">
+                <p className="font-medium text-sm">Hintergrund</p>
+                <p className="text-text-muted text-xs">{BACKGROUND_PRESETS[bgPreset].label}</p>
+              </div>
+              <div
+                className="w-7 h-7 rounded-full border border-white/15"
+                style={{ background: BACKGROUND_PRESETS[bgPreset].swatch }}
+              />
+              <ChevronDown
+                size={14}
+                className={`text-text-muted transition-transform ${openSection === 'hintergrund' ? 'rotate-180' : ''}`}
+              />
+            </button>
+            {openSection === 'hintergrund' && (
+              <div className="p-4 bg-bg-secondary/30 border-b border-border animate-fade-in">
+                <div className="grid grid-cols-3 gap-2">
+                  {(Object.keys(BACKGROUND_PRESETS) as BackgroundPreset[]).map(key => {
+                    const p = BACKGROUND_PRESETS[key];
+                    const active = bgPreset === key;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setBgPreset(key)}
+                        className={`relative flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all active:scale-95 ${
+                          active
+                            ? 'border-accent bg-accent/10'
+                            : 'border-[#2D3E5F] hover:border-accent/50'
+                        }`}
+                      >
+                        <div
+                          className="w-full h-12 rounded-lg border border-white/10"
+                          style={{ background: p.swatch }}
+                        />
+                        <span className={`text-[11px] font-medium ${active ? 'text-accent' : 'text-text-secondary'}`}>
+                          {p.label}
+                        </span>
+                        {active && (
+                          <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
+                            <Check size={10} className="text-white" strokeWidth={3} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-text-muted text-xs mt-3 leading-relaxed">
+                  Liquid-Hintergründe nutzen animierte Glanz-Effekte hinter Glas-Karten.
+                </p>
+              </div>
+            )}
+
             {/* Ansicht (nur auf Laptop/Tablet sichtbar) */}
             {canUseDesktop && (
               <>

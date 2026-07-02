@@ -139,15 +139,19 @@ export default function StatsPage() {
     <div className="min-h-screen pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 p-6 pb-4">
-        <button onClick={() => navigate(-1)} className="text-text-secondary hover:text-text-primary transition-colors">
-          <ArrowLeft size={22} />
+        <button
+          onClick={() => navigate(-1)}
+          className="chip w-9 h-9 rounded-xl flex items-center justify-center"
+          aria-label="Zurück"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold">Statistiken</h1>
+        <h1 className="text-xl font-bold font-[family-name:var(--font-display)]">Statistiken</h1>
       </div>
 
       <div className="px-6 space-y-5">
         {/* Period Toggle */}
-        <div className="flex bg-bg-secondary rounded-xl p-1">
+        <div className="seg">
           {[
             { key: 'week' as Period, label: 'Woche' },
             { key: 'month' as Period, label: 'Monat' },
@@ -156,8 +160,8 @@ export default function StatsPage() {
             <button
               key={key}
               onClick={() => setPeriod(key)}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                period === key ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary'
+              className={`seg-item flex-1 py-2.5 text-sm font-medium ${
+                period === key ? 'seg-item-active' : ''
               }`}
             >
               {label}
@@ -173,8 +177,8 @@ export default function StatsPage() {
           <>
             {/* Total */}
             <div className="glass rounded-2xl p-5 text-center animate-fade-in">
-              <p className="text-text-muted text-sm">Gesamt-Trinkgeld</p>
-              <p className="text-3xl font-bold mt-1">{formatCurrency(stats.totalTips)}</p>
+              <p className="text-text-muted text-[11px] font-bold uppercase tracking-[1.5px]">Gesamt-Trinkgeld</p>
+              <p className="text-shine text-4xl font-extrabold tracking-tight tabular-nums mt-1.5">{formatCurrency(stats.totalTips)}</p>
               {comparison && comparison.direction !== 'flat' && (
                 <div className="flex items-center justify-center gap-1 mt-2">
                   {comparison.direction === 'up' ? (
@@ -198,9 +202,9 @@ export default function StatsPage() {
                 { label: 'Beste Schicht', value: formatCurrency(stats.bestShift) },
                 { label: 'Schichten', value: stats.totalShifts.toString() },
               ].map(({ label, value }) => (
-                <div key={label} className="glass rounded-2xl p-4">
-                  <p className="text-text-muted text-xs">{label}</p>
-                  <p className="text-xl font-bold mt-1">{value}</p>
+                <div key={label} className="glass card-interactive rounded-2xl p-4">
+                  <p className="text-text-muted text-[10px] font-semibold uppercase tracking-wider">{label}</p>
+                  <p className="text-xl font-bold tabular-nums mt-1">{value}</p>
                 </div>
               ))}
             </div>
@@ -218,7 +222,7 @@ export default function StatsPage() {
             <div className="glass rounded-2xl p-5 animate-fade-in animate-fade-in-delay-2">
               <div className="flex items-center justify-between mb-4 gap-3">
                 <p className="text-text-secondary text-sm">Ø Trinkgeld nach Wochentag</p>
-                <div className="flex bg-bg-secondary rounded-lg p-0.5 shrink-0">
+                <div className="seg !rounded-lg !p-0.5 shrink-0">
                   {[
                     { key: 'all' as ShiftFilter, label: 'Alle', icon: null },
                     { key: 'f' as ShiftFilter, label: 'Früh', icon: <Sun size={12} /> },
@@ -227,14 +231,14 @@ export default function StatsPage() {
                     <button
                       key={key}
                       onClick={() => setWeekdayShiftFilter(key)}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      className={`seg-item flex items-center gap-1 px-2.5 py-1 !rounded-md text-xs font-medium ${
                         weekdayShiftFilter === key
                           ? key === 'f'
-                            ? 'bg-amber-500/20 text-amber-400'
+                            ? '!bg-amber-500/20 !text-amber-400 !shadow-none'
                             : key === 's'
-                              ? 'bg-indigo-500/20 text-indigo-300'
-                              : 'bg-accent text-white'
-                          : 'text-text-muted hover:text-text-primary'
+                              ? '!bg-indigo-500/20 !text-indigo-300 !shadow-none'
+                              : 'seg-item-active'
+                          : ''
                       }`}
                     >
                       {icon}
@@ -324,14 +328,14 @@ export default function StatsPage() {
               <div className="glass rounded-2xl p-5 animate-fade-in animate-fade-in-delay-3">
                 <p className="text-text-secondary text-sm mb-3">Früh vs. Spät</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-amber-500/10 rounded-xl p-3 text-center">
+                  <div className="rounded-xl p-3 text-center border border-amber-500/20 bg-gradient-to-b from-amber-500/15 to-amber-500/5">
                     <Sun size={18} className="text-amber-400 mx-auto mb-1" />
-                    <p className="font-bold">{formatCurrency(shiftComparison.avgFrueh)}</p>
+                    <p className="font-bold tabular-nums">{formatCurrency(shiftComparison.avgFrueh)}</p>
                     <p className="text-text-muted text-xs">{shiftComparison.countFrueh} Schichten</p>
                   </div>
-                  <div className="bg-indigo-500/10 rounded-xl p-3 text-center">
+                  <div className="rounded-xl p-3 text-center border border-indigo-500/20 bg-gradient-to-b from-indigo-500/15 to-indigo-500/5">
                     <Moon size={18} className="text-indigo-400 mx-auto mb-1" />
-                    <p className="font-bold">{formatCurrency(shiftComparison.avgSpaet)}</p>
+                    <p className="font-bold tabular-nums">{formatCurrency(shiftComparison.avgSpaet)}</p>
                     <p className="text-text-muted text-xs">{shiftComparison.countSpaet} Schichten</p>
                   </div>
                 </div>
@@ -353,7 +357,7 @@ export default function StatsPage() {
               <div className="relative">
                 <button
                   onClick={() => setYearDropdownOpen(!yearDropdownOpen)}
-                  className="flex items-center gap-1.5 bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:border-accent transition-colors"
+                  className="chip flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium !text-text-primary"
                 >
                   {selectedYear}
                   <ChevronDown size={14} className={`text-text-muted transition-transform ${yearDropdownOpen ? 'rotate-180' : ''}`} />
@@ -362,7 +366,7 @@ export default function StatsPage() {
                 {yearDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setYearDropdownOpen(false)} />
-                    <div className="absolute right-0 top-full mt-1 z-20 bg-bg-secondary border border-[#2D3E5F] rounded-lg shadow-xl overflow-hidden min-w-[100px]">
+                    <div className="glass absolute right-0 top-full mt-1 z-20 rounded-xl shadow-xl overflow-hidden min-w-[100px] animate-pop-in">
                       {availableYears.map(year => (
                         <button
                           key={year}
@@ -395,7 +399,7 @@ export default function StatsPage() {
                 {monthlyData.map((m, i) => (
                   <div
                     key={m.month}
-                    className="glass rounded-2xl p-4 animate-fade-in"
+                    className="glass card-interactive rounded-2xl p-4 animate-fade-in"
                     style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s`, opacity: 0 }}
                   >
                     <div className="flex items-center justify-between mb-3">

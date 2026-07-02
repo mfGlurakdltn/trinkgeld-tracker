@@ -66,7 +66,7 @@ export default function DashboardPage() {
       <div className="animate-fade-in flex items-center justify-between">
         <div>
           <p className="text-text-secondary text-xs font-medium tracking-wide">Willkommen zurück</p>
-          <h1 className="text-[22px] font-extrabold capitalize">{`Hallo, ${userName}`}</h1>
+          <h1 className="text-[22px] font-extrabold capitalize font-[family-name:var(--font-display)]">{`Hallo, ${userName}`}</h1>
         </div>
       </div>
 
@@ -98,7 +98,7 @@ export default function DashboardPage() {
                   </span>
                 )}
               </div>
-              <p className="text-white font-extrabold leading-tight tracking-tight" style={{ fontSize: 46, letterSpacing: '-1.5px' }}>
+              <p className="text-shine font-extrabold leading-tight tracking-tight tabular-nums" style={{ fontSize: 46, letterSpacing: '-1.5px' }}>
                 {currentStats ? formatCurrency(currentStats.totalTips) : '0,00 €'}
               </p>
               {currentStats && (
@@ -125,11 +125,14 @@ export default function DashboardPage() {
             </div>
           </LiquidGlass>
         ) : (
-          <div className="balance-gradient rounded-2xl p-6 relative overflow-hidden">
+          <div
+            className="balance-gradient rounded-2xl p-6 relative overflow-hidden border border-white/15"
+            style={{ boxShadow: '0 12px 40px rgba(45,95,158,0.35), inset 0 1px 0 rgba(255,255,255,0.18)' }}
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
             <p className="text-white/70 text-sm mb-1">Dieser Monat</p>
-            <p className="text-[40px] font-bold leading-tight tracking-tight">
+            <p className="text-[40px] font-bold leading-tight tracking-tight tabular-nums">
               {currentStats ? formatCurrency(currentStats.totalTips) : '0,00 €'}
             </p>
             {change && change.direction !== 'flat' && (
@@ -197,8 +200,8 @@ export default function DashboardPage() {
               onClick={() => navigate(path)}
               className={`flex flex-col items-center gap-2 py-4 rounded-2xl transition-all active:scale-95 ${
                 accent
-                  ? 'bg-accent/20 text-accent hover:bg-accent/30'
-                  : 'bg-bg-card/60 text-text-secondary hover:bg-bg-card hover:text-text-primary'
+                  ? 'bg-accent/20 text-accent-light hover:bg-accent/30 border border-accent/30 shadow-[0_2px_14px_rgba(74,144,226,0.20)]'
+                  : 'chip'
               }`}
             >
               <Icon size={20} />
@@ -283,10 +286,12 @@ export default function DashboardPage() {
               <button
                 key={shift.id}
                 onClick={() => navigate('/history')}
-                className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:bg-bg-card/80 transition-colors active:scale-[0.98]"
+                className="w-full glass card-interactive rounded-2xl p-4 flex items-center gap-4"
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  shift.schicht === 'f' ? 'bg-amber-500/15 text-amber-400' : 'bg-indigo-500/15 text-indigo-400'
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  shift.schicht === 'f'
+                    ? 'border-amber-500/20 bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-400'
+                    : 'border-indigo-500/20 bg-gradient-to-b from-indigo-500/20 to-indigo-500/5 text-indigo-400'
                 }`}>
                   {shift.schicht === 'f' ? <Sun size={18} /> : <Moon size={18} />}
                 </div>
@@ -299,7 +304,7 @@ export default function DashboardPage() {
                     {formatDateShort(shift.datum)} • {getWeekday(shift.datum)}
                   </p>
                 </div>
-                <p className="text-positive font-semibold">{formatCurrency(shift.betrag)}</p>
+                <p className="text-positive font-semibold tabular-nums">+{formatCurrency(shift.betrag)}</p>
               </button>
             ))}
           </div>

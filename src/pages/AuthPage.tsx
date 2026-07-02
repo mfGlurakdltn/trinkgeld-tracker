@@ -34,14 +34,20 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-bg-primary">
+    <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm animate-fade-in">
         {/* Logo */}
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-4">
-            <Coins className="w-8 h-8 text-accent" />
+        <div className="flex flex-col items-center mb-8">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border border-white/15"
+            style={{
+              background: 'linear-gradient(135deg, rgba(91,163,255,0.35), rgba(45,95,158,0.20))',
+              boxShadow: '0 8px 30px rgba(74,144,226,0.35), inset 0 1px 0 rgba(255,255,255,0.20)',
+            }}
+          >
+            <Coins className="w-8 h-8 text-accent-light" />
           </div>
-          <h1 className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)]">
+          <h1 className="text-2xl font-bold text-shine font-[family-name:var(--font-display)]">
             Trinkgeld Tracker
           </h1>
           <p className="text-text-secondary text-sm mt-1">
@@ -50,7 +56,7 @@ export default function AuthPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="glass rounded-3xl p-6 space-y-4">
           <div>
             <label className="block text-text-secondary text-sm mb-1.5">Email</label>
             <input
@@ -59,7 +65,7 @@ export default function AuthPage() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="deine@email.de"
-              className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+              className="input"
             />
           </div>
 
@@ -73,7 +79,7 @@ export default function AuthPage() {
                 required
                 minLength={6}
                 placeholder="••••••••"
-                className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 pr-12 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+                className="input !pr-12"
               />
               <button
                 type="button"
@@ -100,7 +106,7 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-accent hover:bg-accent-light text-white font-semibold rounded-xl py-3.5 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="btn-primary w-full font-semibold rounded-xl py-3.5 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
             {isLogin ? 'Einloggen' : 'Registrieren'}

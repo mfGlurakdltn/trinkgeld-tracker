@@ -182,15 +182,19 @@ export default function ProfilePage() {
     <div className="min-h-screen pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 p-6 pb-4">
-        <button onClick={() => navigate(-1)} className="text-text-secondary hover:text-text-primary transition-colors">
-          <ArrowLeft size={22} />
+        <button
+          onClick={() => navigate(-1)}
+          className="chip w-9 h-9 rounded-xl flex items-center justify-center"
+          aria-label="Zurück"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold">Profil</h1>
+        <h1 className="text-xl font-bold font-[family-name:var(--font-display)]">Profil</h1>
       </div>
 
       <div className="px-6 space-y-4">
         {/* Tabs */}
-        <div className="flex bg-bg-secondary rounded-xl p-1">
+        <div className="seg">
           {[
             { key: 'profil' as Tab, label: 'Profil' },
             { key: 'einstellungen' as Tab, label: 'Einstellungen' },
@@ -198,8 +202,8 @@ export default function ProfilePage() {
             <button
               key={key}
               onClick={() => { setTab(key); setOpenSection(null); }}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                tab === key ? 'bg-accent text-white' : 'text-text-secondary hover:text-text-primary'
+              className={`seg-item flex-1 py-2.5 text-sm font-medium ${
+                tab === key ? 'seg-item-active' : ''
               }`}
             >
               {label}
@@ -212,8 +216,14 @@ export default function ProfilePage() {
             {/* User Card */}
             <div className="glass rounded-2xl p-5 animate-fade-in">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                  <User size={22} className="text-accent" />
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center border border-white/15"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(91,163,255,0.35), rgba(45,95,158,0.25))',
+                    boxShadow: '0 4px 16px rgba(74,144,226,0.25), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <User size={22} className="text-accent-light" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{currentDisplayName}</p>
@@ -308,8 +318,8 @@ export default function ProfilePage() {
                         onClick={() => setBgPreset(key)}
                         className={`relative flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all active:scale-95 ${
                           active
-                            ? 'border-accent bg-accent/10'
-                            : 'border-[#2D3E5F] hover:border-accent/50'
+                            ? 'border-accent bg-accent/10 shadow-[0_2px_14px_rgba(74,144,226,0.25)]'
+                            : 'border-white/10 hover:border-accent/50'
                         }`}
                       >
                         <div
@@ -363,7 +373,7 @@ export default function ProfilePage() {
                         className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
                           viewMode === 'mobile'
                             ? 'bg-accent/20 text-accent border border-accent/30'
-                            : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                            : 'chip'
                         }`}
                       >
                         <Smartphone size={16} />
@@ -374,7 +384,7 @@ export default function ProfilePage() {
                         className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
                           viewMode === 'desktop'
                             ? 'bg-accent/20 text-accent border border-accent/30'
-                            : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                            : 'chip'
                         }`}
                       >
                         <Monitor size={16} />
@@ -414,7 +424,7 @@ export default function ProfilePage() {
                     onChange={e => setNewName(e.target.value)}
                     maxLength={50}
                     placeholder="Dein Name"
-                    className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+                    className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -427,7 +437,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleNameChange}
                     disabled={nameLoading || !newName.trim() || newName.trim() === currentDisplayName}
-                    className="flex-1 py-2.5 rounded-lg text-xs bg-accent text-white font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {nameLoading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
                     Speichern
@@ -462,7 +472,7 @@ export default function ProfilePage() {
                     min="0.1"
                     max="24"
                     step="0.25"
-                    className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors"
+                    className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -475,7 +485,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleArbeitszeitChange}
                     disabled={arbeitszeitLoading || parseFloat(newArbeitszeit) === currentArbeitszeit}
-                    className="flex-1 py-2.5 rounded-lg text-xs bg-accent text-white font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {arbeitszeitLoading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
                     Speichern
@@ -508,7 +518,7 @@ export default function ProfilePage() {
                     value={newEmail}
                     onChange={e => setNewEmail(e.target.value)}
                     placeholder="neue@email.de"
-                    className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+                    className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -521,7 +531,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleEmailChange}
                     disabled={emailLoading || !newEmail}
-                    className="flex-1 py-2.5 rounded-lg text-xs bg-accent text-white font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {emailLoading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
                     Ändern
@@ -555,7 +565,7 @@ export default function ProfilePage() {
                     onChange={e => setNewPassword(e.target.value)}
                     placeholder="••••••••"
                     minLength={6}
-                    className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+                    className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
                 <div>
@@ -565,7 +575,7 @@ export default function ProfilePage() {
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+                    className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
                 {newPassword && confirmPassword && newPassword !== confirmPassword && (
@@ -581,7 +591,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handlePasswordChange}
                     disabled={passwordLoading || newPassword.length < 6 || newPassword !== confirmPassword}
-                    className="flex-1 py-2.5 rounded-lg text-xs bg-accent text-white font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {passwordLoading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
                     Speichern

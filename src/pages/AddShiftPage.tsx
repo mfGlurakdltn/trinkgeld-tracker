@@ -58,24 +58,28 @@ export default function AddShiftPage() {
     <div className="min-h-screen pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 p-6 pb-4">
-        <button onClick={() => navigate(-1)} className="text-text-secondary hover:text-text-primary transition-colors">
-          <ArrowLeft size={22} />
+        <button
+          onClick={() => navigate(-1)}
+          className="chip w-9 h-9 rounded-xl flex items-center justify-center"
+          aria-label="Zurück"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold">Schicht hinzufügen</h1>
+        <h1 className="text-xl font-bold font-[family-name:var(--font-display)]">Schicht hinzufügen</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="px-6 space-y-5">
         {/* Preview Card */}
         {betragNum > 0 && (
-          <div className="glass rounded-2xl p-4 flex gap-4 animate-fade-in">
+          <div className="glass rounded-2xl p-4 flex gap-4 animate-pop-in">
             <div className="flex-1 text-center">
-              <p className="text-text-muted text-xs mb-1">€/Stunde</p>
-              <p className="text-accent font-bold text-lg">{formatCurrency(euroPerHour)}</p>
+              <p className="text-text-muted text-[10px] uppercase tracking-wider mb-1">€/Stunde</p>
+              <p className="text-accent-light font-bold text-lg tabular-nums">{formatCurrency(euroPerHour)}</p>
             </div>
             {tipPercent > 0 && (
               <div className="flex-1 text-center border-l border-border">
-                <p className="text-text-muted text-xs mb-1">Tip-Rate</p>
-                <p className="text-accent font-bold text-lg">{tipPercent.toFixed(1)}%</p>
+                <p className="text-text-muted text-[10px] uppercase tracking-wider mb-1">Tip-Rate</p>
+                <p className="text-accent-light font-bold text-lg tabular-nums">{tipPercent.toFixed(1)}%</p>
               </div>
             )}
           </div>
@@ -90,7 +94,7 @@ export default function AddShiftPage() {
             max={new Date().toISOString().split('T')[0]}
             onChange={e => setDatum(e.target.value)}
             required
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors [color-scheme:dark]"
+            className="input"
           />
         </div>
 
@@ -105,7 +109,7 @@ export default function AddShiftPage() {
             min="0.01"
             step="0.01"
             placeholder="0,00"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary text-2xl font-bold placeholder:text-text-muted placeholder:font-normal placeholder:text-base focus:outline-none focus:border-accent transition-colors"
+            className="input text-2xl font-bold tabular-nums placeholder:font-normal placeholder:text-base"
           />
           <div className="flex gap-2 mt-2">
             {[5, 10, 20, 50].map(amount => (
@@ -113,7 +117,7 @@ export default function AddShiftPage() {
                 key={amount}
                 type="button"
                 onClick={() => quickAdd(amount)}
-                className="flex-1 bg-bg-card/60 hover:bg-bg-card text-text-secondary hover:text-text-primary py-2 rounded-lg text-sm font-medium transition-colors active:scale-95"
+                className="chip flex-1 py-2 rounded-lg text-sm font-semibold"
               >
                 +{amount}
               </button>
@@ -136,9 +140,9 @@ export default function AddShiftPage() {
                 className={`flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
                   schicht === value
                     ? value === 'f'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                    : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-[0_2px_14px_rgba(245,158,11,0.20)]'
+                      : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 shadow-[0_2px_14px_rgba(99,102,241,0.25)]'
+                    : 'chip'
                 }`}
               >
                 <Icon size={16} />
@@ -159,8 +163,8 @@ export default function AddShiftPage() {
                 onClick={() => setMitarbeiter(val)}
                 className={`py-3 rounded-xl font-medium text-sm transition-all active:scale-95 ${
                   mitarbeiter === val
-                    ? 'bg-accent/20 text-accent border border-accent/30'
-                    : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary hover:text-text-primary'
+                    ? 'bg-accent/20 text-accent-light border border-accent/40 shadow-[0_2px_14px_rgba(74,144,226,0.25)]'
+                    : 'chip'
                 }`}
               >
                 {val}
@@ -193,7 +197,7 @@ export default function AddShiftPage() {
             min="0.1"
             step="0.25"
             placeholder="z.B. 6.5"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+            className="input"
           />
         </div>
 
@@ -207,7 +211,7 @@ export default function AddShiftPage() {
             min="0"
             step="0.01"
             placeholder="Gesamtumsatz der Schicht"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="input"
           />
         </div>
 
@@ -220,7 +224,7 @@ export default function AddShiftPage() {
             maxLength={200}
             rows={2}
             placeholder="z.B. Event, Wetter, Besonderheit..."
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors resize-none"
+            className="input resize-none"
           />
         </div>
 
@@ -229,7 +233,7 @@ export default function AddShiftPage() {
           <button
             type="submit"
             disabled={addShift.isPending || betragNum <= 0}
-            className="w-full bg-accent hover:bg-accent-light text-white font-semibold rounded-xl py-4 text-lg transition-colors disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="btn-primary w-full font-semibold rounded-xl py-4 text-lg disabled:opacity-40 flex items-center justify-center gap-2"
           >
             {addShift.isPending && <Loader2 size={20} className="animate-spin" />}
             Schicht speichern

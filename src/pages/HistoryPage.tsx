@@ -62,7 +62,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
             value={datum}
             max={new Date().toISOString().split('T')[0]}
             onChange={e => setDatum(e.target.value)}
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors [color-scheme:dark]"
+            className="input !rounded-lg !px-3 !py-2 text-sm"
           />
         </div>
         <div>
@@ -73,7 +73,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
             onChange={e => setBetrag(e.target.value)}
             min="0.01"
             step="0.01"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary font-bold focus:outline-none focus:border-accent transition-colors"
+            className="input !rounded-lg !px-3 !py-2 text-sm font-bold tabular-nums"
           />
         </div>
       </div>
@@ -94,7 +94,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
                   ? value === 'f'
                     ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                     : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                  : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary'
+                  : 'chip'
               }`}
             >
               <Icon size={13} />
@@ -115,7 +115,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
               className={`py-2 rounded-lg text-xs font-medium transition-all ${
                 mitarbeiter === val
                   ? 'bg-accent/20 text-accent border border-accent/30'
-                  : 'bg-bg-secondary border border-[#2D3E5F] text-text-secondary'
+                  : 'chip'
               }`}
             >
               {val}
@@ -144,7 +144,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
           disabled={useStandardTime}
           min="0.1"
           step="0.25"
-          className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+          className="input !rounded-lg !px-3 !py-2 text-sm"
         />
       </div>
 
@@ -158,7 +158,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
             min="0"
             step="0.01"
             placeholder="optional"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="input !rounded-lg !px-3 !py-2 text-sm"
           />
         </div>
         <div>
@@ -169,7 +169,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
             onChange={e => setNotiz(e.target.value)}
             maxLength={200}
             placeholder="optional"
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="input !rounded-lg !px-3 !py-2 text-sm"
           />
         </div>
       </div>
@@ -184,7 +184,7 @@ function EditForm({ shift, onClose }: { shift: ShiftExtended; onClose: () => voi
         <button
           onClick={handleSave}
           disabled={updateShift.isPending || (parseFloat(betrag) || 0) <= 0}
-          className="flex-1 py-2.5 rounded-lg text-xs bg-accent text-white hover:bg-accent-light transition-colors font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
+          className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
         >
           {updateShift.isPending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
           Speichern
@@ -249,11 +249,17 @@ export default function HistoryPage() {
   return (
     <div className="min-h-screen pb-24">
       <div className="flex items-center gap-3 p-6 pb-4">
-        <button onClick={() => navigate(-1)} className="text-text-secondary hover:text-text-primary transition-colors">
-          <ArrowLeft size={22} />
+        <button
+          onClick={() => navigate(-1)}
+          className="chip w-9 h-9 rounded-xl flex items-center justify-center"
+          aria-label="Zurück"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <h1 className="text-xl font-bold">Historie</h1>
-        <span className="text-text-muted text-sm ml-auto">{filteredShifts.length} Einträge</span>
+        <h1 className="text-xl font-bold font-[family-name:var(--font-display)]">Historie</h1>
+        <span className="chip text-text-muted text-xs font-medium ml-auto px-2.5 py-1 rounded-full">
+          {filteredShifts.length} Einträge
+        </span>
       </div>
 
       <div className="px-6 space-y-4">
@@ -264,7 +270,7 @@ export default function HistoryPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Suchen..."
-            className="w-full bg-bg-secondary border border-[#2D3E5F] rounded-xl pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="input !pl-10 !py-2.5 text-sm"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary">
@@ -274,7 +280,7 @@ export default function HistoryPage() {
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
-          <div className="flex bg-bg-secondary rounded-lg p-0.5 text-xs shrink-0">
+          <div className="seg !rounded-lg !p-0.5 text-xs shrink-0">
             {[
               { key: 'datum' as SortKey, label: 'Datum' },
               { key: 'betrag' as SortKey, label: 'Betrag' },
@@ -283,8 +289,8 @@ export default function HistoryPage() {
               <button
                 key={key}
                 onClick={() => setSortKey(key)}
-                className={`px-3 py-1.5 rounded-md transition-all ${
-                  sortKey === key ? 'bg-accent text-white' : 'text-text-secondary'
+                className={`seg-item px-3 py-1.5 !rounded-md font-medium ${
+                  sortKey === key ? 'seg-item-active' : ''
                 }`}
               >
                 {label}
@@ -292,7 +298,7 @@ export default function HistoryPage() {
             ))}
           </div>
 
-          <div className="flex bg-bg-secondary rounded-lg p-0.5 text-xs shrink-0">
+          <div className="seg !rounded-lg !p-0.5 text-xs shrink-0">
             {[
               { key: 'all' as FilterSchicht, label: 'Alle' },
               { key: 'f' as FilterSchicht, label: 'Früh' },
@@ -301,8 +307,8 @@ export default function HistoryPage() {
               <button
                 key={key}
                 onClick={() => setFilterSchicht(key)}
-                className={`px-3 py-1.5 rounded-md transition-all ${
-                  filterSchicht === key ? 'bg-accent text-white' : 'text-text-secondary'
+                className={`seg-item px-3 py-1.5 !rounded-md font-medium ${
+                  filterSchicht === key ? 'seg-item-active' : ''
                 }`}
               >
                 {label}
@@ -320,12 +326,14 @@ export default function HistoryPage() {
             {filteredShifts.map((shift, i) => (
               <div
                 key={shift.id}
-                className="glass rounded-2xl p-4 animate-fade-in"
+                className="glass card-interactive rounded-2xl p-4 animate-fade-in"
                 style={{ animationDelay: `${Math.min(i * 0.03, 0.3)}s`, opacity: 0 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                    shift.schicht === 'f' ? 'bg-amber-500/15 text-amber-400' : 'bg-indigo-500/15 text-indigo-400'
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+                    shift.schicht === 'f'
+                      ? 'border-amber-500/20 bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-400'
+                      : 'border-indigo-500/20 bg-gradient-to-b from-indigo-500/20 to-indigo-500/5 text-indigo-400'
                   }`}>
                     {shift.schicht === 'f' ? <Sun size={18} /> : <Moon size={18} />}
                   </div>
@@ -353,7 +361,7 @@ export default function HistoryPage() {
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <p className="text-positive font-bold">{formatCurrency(shift.betrag)}</p>
+                    <p className="text-positive font-bold tabular-nums">+{formatCurrency(shift.betrag)}</p>
                     <button
                       onClick={() => {
                         setEditId(editId === shift.id ? null : shift.id);

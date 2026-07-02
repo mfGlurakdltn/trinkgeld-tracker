@@ -115,8 +115,8 @@ export default function ProfilePage() {
   };
 
   const handlePasswordChange = async () => {
-    if (newPassword.length < 6) {
-      toast.error('Passwort muss mindestens 6 Zeichen haben');
+    if (newPassword.length < 8) {
+      toast.error('Passwort muss mindestens 8 Zeichen haben');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -548,7 +548,7 @@ export default function ProfilePage() {
               <Lock size={18} className="text-accent" />
               <div className="text-left flex-1">
                 <p className="font-medium text-sm">Passwort ändern</p>
-                <p className="text-text-muted text-xs">Mindestens 6 Zeichen</p>
+                <p className="text-text-muted text-xs">Mindestens 8 Zeichen</p>
               </div>
               <ChevronDown
                 size={14}
@@ -564,7 +564,7 @@ export default function ProfilePage() {
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    minLength={6}
+                    minLength={8}
                     className="input !rounded-lg !px-3 !py-2.5 text-sm"
                   />
                 </div>
@@ -590,7 +590,7 @@ export default function ProfilePage() {
                   </button>
                   <button
                     onClick={handlePasswordChange}
-                    disabled={passwordLoading || newPassword.length < 6 || newPassword !== confirmPassword}
+                    disabled={passwordLoading || newPassword.length < 8 || newPassword !== confirmPassword}
                     className="btn-primary flex-1 py-2.5 rounded-lg text-xs font-medium disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {passwordLoading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
